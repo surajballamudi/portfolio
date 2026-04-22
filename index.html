@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Suraj Ballamudi — SAP Consultant</title>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#c8a96e;--teal:#00d4c8;--text:#f0eee9;
+  --muted:rgba(240,238,233,0.42);--border:rgba(255,255,255,0.07);--bg:#04040a;
+}
+html{scroll-behavior:auto;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+#cur,#cur2{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cur{width:7px;height:7px;background:var(--text);transition:width .3s,height .3s,background .3s;}
+#cur2{width:38px;height:38px;border:1px solid rgba(200,169,110,.45);transition:all .35s;}
+body.hov #cur{width:5px;height:5px;background:var(--gold);}
+body.hov #cur2{width:56px;height:56px;border-color:rgba(200,169,110,.7);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:1.5rem 3.5rem;transition:background .5s,backdrop-filter .5s;}
+nav.scrolled{background:rgba(4,4,10,.82);backdrop-filter:blur(22px);border-bottom:1px solid var(--border);}
+.nl{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--text);text-decoration:none;}
+.nr{display:flex;align-items:center;gap:2.5rem;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{font-size:.68rem;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;position:relative;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-links a .uline{position:absolute;bottom:-4px;left:0;right:0;height:1px;overflow:hidden;}
+.nav-links a .uline::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--teal),var(--gold));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+.nav-links a:hover .uline::before{transform:scaleX(1);}
+.nav-links a.active .uline::before{transform:scaleX(1);background:var(--gold);}
+.nav-links a .uline::after{content:'';position:absolute;inset:0;background:var(--border);}
+/* Active dot indicator */
+.nav-links a.active .stxt{color:var(--text);}
+.nav-links a.active{color:var(--text);}
+/* Pip dot above active link */
+.nav-links li{position:relative;}
+.nav-links li::before{
+  content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%) scale(0);
+  width:4px;height:4px;border-radius:50%;
+  background:var(--gold);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+.nav-links a.active ~ span,
+.nav-links li:has(a.active)::before{transform:translateX(-50%) scale(1);}
+.ncta{
+  font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--bg);text-decoration:none;
+  background:var(--text);
+  border:1px solid var(--text);
+  padding:.6rem 1.5rem;border-radius:100px;
+  transition:all .3s;font-weight:500;
+}
+.ncta:hover{background:rgba(240,238,233,.85);border-color:rgba(240,238,233,.85);}
+.ncta:hover{border-color:rgba(200,169,110,.6);background:rgba(200,169,110,.08);}
+.scramble-char{display:inline-block;transition:color .1s;}
+.scramble-char.scrambling{color:var(--teal);}
+.stat-scramble .scramble-char.scrambling{color:var(--gold)!important;}
+
+/* ══ HERO ══ */
+#hero{
+  position:relative;height:100vh;overflow:hidden;
+  display:flex;flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  padding:5rem 3.5rem 0;
+  background:#000;
+  text-align:center;
+}
+#lightning-canvas{position:absolute;inset:0;z-index:0;width:100%;height:100%;}
+#hero-sphere{
+  position:absolute;
+  bottom:-42%;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(800px,98vw);
+  height:min(800px,98vw);
+  border-radius:50%;
+  /* More transparent — lightning shows through */
+  background:radial-gradient(circle at 35% 25%, rgba(30,58,110,0.65) 0%, rgba(10,20,50,0.55) 30%, rgba(4,6,18,0.45) 60%, rgba(0,0,0,0.7) 85%);
+  backdrop-filter:blur(28px);
+  z-index:1;pointer-events:none;
+}
+/* Bright glowing rim — the hero Odyssey halo */
+#hero-sphere::before{
+  content:'';position:absolute;
+  top:-2px;left:50%;transform:translateX(-50%);
+  width:100.5%;height:51%;
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  border-top:1.5px solid rgba(100,160,255,0.45);
+  border-left:1px solid rgba(80,130,255,0.15);
+  border-right:1px solid rgba(80,130,255,0.15);
+  box-shadow:0 -8px 40px rgba(80,140,255,0.18), inset 0 1px 0 rgba(120,170,255,0.12);
+  pointer-events:none;
+}
+/* Wide diffuse glow underneath rim */
+#hero-sphere::after{
+  content:'';position:absolute;
+  top:-100px;left:50%;transform:translateX(-50%);
+  width:90%;height:200px;border-radius:50%;
+  background:radial-gradient(ellipse 70% 100% at 50% 100%, rgba(60,110,255,0.22) 0%, transparent 70%);
+  filter:blur(24px);
+}
+#hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 18%,transparent 50%,rgba(0,0,0,.4) 85%,rgba(0,0,0,.7) 100%);
+}
+#hero::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.015) 3px,rgba(0,0,0,.015) 4px);}
+
+.hero-inner{
+  position:relative;z-index:10;width:100%;
+  display:flex;flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  flex:1;
+}
+
+/* eyebrow */
+.hero-eyebrow{display:flex;align-items:center;gap:.8rem;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .2s forwards;}
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;flex-shrink:0;box-shadow:0 0 0 0 rgba(0,212,200,.7);animation:sonar 2.5s ease-out 1.5s infinite;}
+@keyframes sonar{0%{box-shadow:0 0 0 0 rgba(0,212,200,.7);}70%{box-shadow:0 0 0 10px rgba(0,212,200,0);}100%{box-shadow:0 0 0 0 rgba(0,212,200,0);}}
+
+/* ── FULL WIDTH NAME LAYOUT ── */
+.hero-name{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300;letter-spacing:-.03em;
+  text-align:center;width:100%;
+}
+
+/* "Suraj Ballamudi" — one big compound heading */
+.nl-main{
+  display:block;overflow:hidden;
+  font-size:clamp(3.2rem,11vw,11.5rem);
+  line-height:.9;white-space:nowrap;letter-spacing:-.04em;
+  margin-bottom:.25em;
+}
+
+/* "Consultant." — small elegant subtitle below */
+.nl-consultant{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:400;font-family:'Inter',sans-serif;
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.15);
+  padding:.55rem 1.4rem;border-radius:100px;
+  background:rgba(255,255,255,.04);backdrop-filter:blur(8px);
+  opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .92s forwards;
+  margin-top:1.8rem;
+}
+.nl-consultant::before{
+  content:'✦';color:var(--teal);font-size:.55rem;
+}
+
+/* Eyebrow line — location tag */
+.nl-eyebrow{
+  display:block;overflow:hidden;
+  font-family:'Inter',sans-serif;
+  font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1.8rem;
+  opacity:0;animation:fadeUp .7s ease .1s forwards;
+}
+
+.nl-main-wrap{overflow:hidden;}
+.nl-main-inner{
+  display:block;
+  transform:translateY(110%);
+  animation:lineUp .95s cubic-bezier(.16,1,.3,1) .3s forwards;
+}
+
+@keyframes lineUp{to{transform:translateY(0);}}
+
+.nl2-i{font-style:italic;color:rgba(240,238,233,.38);}
+.nl3-i{
+  /* "Consultant." plain muted text */
+  color:var(--muted);
+  letter-spacing:.22em;
+}
+
+/* hero name block — sits inside upper sphere dome */
+.hero-eyebrow-row{
+  width:100%;display:flex;justify-content:flex-start;
+  position:relative;z-index:10;
+  opacity:0;animation:fadeUp .7s ease .15s forwards;
+}
+.hero-name-block{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;
+  padding-top:12vh;
+  padding-bottom:2vh;
+  position:relative;z-index:10;
+}
+
+/* hero foot */
+.hero-foot{
+  display:flex;justify-content:center;align-items:center;gap:0;
+  width:100%;
+  opacity:0;animation:fadeUp .9s cubic-bezier(.16,1,.3,1) 1.2s forwards;
+  position:relative;z-index:20;
+  border-top:1px solid rgba(255,255,255,.08);
+  padding:1.5rem 0 3rem;
+  margin-top:auto;
+}
+/* Divider between stats */
+.hstat+.hstat{border-left:1px solid rgba(255,255,255,.08);margin-left:0;}
+.hstat{flex:1;text-align:center;padding:0 2rem;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.hero-desc{max-width:340px;font-size:.84rem;line-height:1.95;color:var(--muted);}
+.hero-stats{display:flex;gap:3rem;}
+.hstat .n{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;line-height:1;cursor:default;}
+.hstat .l{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+
+/* scroll indicator */
+.scroll-ind{position:absolute;right:3.5rem;bottom:3rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;z-index:10;opacity:0;animation:fadeUp .7s ease 1.8s forwards;}
+.scroll-line{width:1px;height:60px;background:linear-gradient(180deg,transparent,var(--muted));animation:sPulse 2s ease-in-out 2.2s infinite;}
+@keyframes sPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+.scroll-txt{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);writing-mode:vertical-lr;}
+
+/* MARQUEE */
+.mq{border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:.85rem 0;background:rgba(200,169,110,.03);backdrop-filter:blur(8px);}
+.mq-track{display:flex;animation:mqroll 34s linear infinite;white-space:nowrap;transition:animation-direction .3s;}
+.mq:hover .mq-track{animation-direction:reverse;}
+.mq-i{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);padding:0 2.2rem;letter-spacing:.04em;}
+.mq-sep{color:var(--gold);font-style:normal;font-family:'Inter',sans-serif;font-size:.5rem;vertical-align:middle;}
+@keyframes mqroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* SECTIONS */
+section.sec{padding:9rem 3.5rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.si{max-width:1260px;margin:0 auto;position:relative;z-index:1;}
+.sh{display:flex;align-items:baseline;gap:1.8rem;margin-bottom:6rem;}
+.sn{font-family:'Cormorant Garamond',serif;font-size:.8rem;font-style:italic;color:var(--muted);}
+.st{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.8vw,3.2rem);font-weight:300;letter-spacing:-.02em;}
+.st em{font-style:italic;color:rgba(200,169,110,0.7);}
+
+/* Nebula tint per section */
+.sec-neb{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(80,50,180,.07) 0%,rgba(0,150,200,.05) 40%,transparent 70%);}
+
+/* ── LIQUID METAL ── */
+.lm-canvas{
+  position:absolute;inset:0;z-index:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  opacity:.45;
+  mix-blend-mode:screen;
+}
+/* CSS animated metallic shimmer — fallback & lightweight sections */
+@property --lm-angle{syntax:'<angle>';inherits:false;initial-value:0deg;}
+@property --lm-pos{syntax:'<percentage>';inherits:false;initial-value:0%;}
+.lm-css{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  --lm-angle:0deg;--lm-pos:0%;
+  background:linear-gradient(
+    var(--lm-angle),
+    transparent 0%,
+    rgba(60,80,140,.06) 20%,
+    rgba(100,130,200,.09) var(--lm-pos),
+    rgba(180,200,255,.06) 55%,
+    transparent 80%
+  );
+  animation:lmShift 8s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+}
+@keyframes lmShift{
+  0%{--lm-angle:15deg;--lm-pos:30%;}
+  33%{--lm-angle:35deg;--lm-pos:55%;}
+  66%{--lm-angle:20deg;--lm-pos:40%;}
+  100%{--lm-angle:45deg;--lm-pos:65%;}
+}
+.sec-orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+
+/* ABOUT */
+.about-g{display:grid;grid-template-columns:1.1fr 1fr;gap:8rem;align-items:start;}
+.at p{font-size:.88rem;line-height:2.05;color:var(--muted);margin-bottom:1.3rem;}
+.at p strong{color:var(--text);font-weight:400;}
+.at blockquote{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;font-weight:300;line-height:1.55;color:var(--text);border-left:2px solid var(--gold);padding-left:1.5rem;margin:2.5rem 0;}
+.ach-g{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:3rem;background:var(--border);border:1px solid var(--border);}
+.ach{background:var(--bg);padding:2rem;transition:background .3s;}
+.ach:hover{background:rgba(255,255,255,.03);}
+.ach .n{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1;color:var(--text);}
+.ach .l{font-size:.68rem;color:var(--muted);letter-spacing:.06em;margin-top:.4rem;line-height:1.5;}
+.fr{display:flex;justify-content:space-between;align-items:baseline;padding:1.1rem 0;border-bottom:1px solid var(--border);}
+.fr:first-child{border-top:1px solid var(--border);}
+.fk{font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.fv{font-size:.86rem;color:var(--text);}
+.fv.open{color:#4ecb8d;}
+.fv a{color:inherit;text-decoration:underline;text-underline-offset:3px;}
+
+/* EXPERIENCE */
+.ei{display:grid;grid-template-columns:200px 1fr 40px;gap:4rem;align-items:start;padding:3rem 0;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.ei::before{content:'';position:absolute;inset:0;left:-100%;background:rgba(0,212,200,.022);transition:left .55s cubic-bezier(.16,1,.3,1);pointer-events:none;}
+.ei:hover::before{left:0;}
+.em .ed{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.em .ec{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;color:var(--text);line-height:1.3;}
+.em .ec small{display:block;font-family:'Inter',sans-serif;font-size:.67rem;color:var(--muted);margin-top:.2rem;}
+.eb h3{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;color:var(--text);margin-bottom:1.2rem;line-height:1.2;}
+.eb ul{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+.eb ul li{font-size:.82rem;line-height:1.8;color:var(--muted);padding-left:1.2rem;position:relative;}
+.eb ul li::before{content:'—';position:absolute;left:0;color:var(--gold);font-size:.7rem;top:.38rem;}
+.eb ul li strong{color:var(--text);font-weight:400;}
+.etags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:1.2rem;}
+.et{border:1px solid var(--border);color:var(--muted);font-size:.64rem;padding:.2rem .6rem;border-radius:100px;letter-spacing:.06em;font-family:monospace;}
+.ea{
+  font-size:1.1rem;color:rgba(255,255,255,.06);
+  transition:color .35s,transform .35s;
+  align-self:center;font-weight:300;
+}
+.ei:hover .ea{
+  color:var(--gold);
+  transform:translate(5px,-5px);
+  text-shadow:0 0 12px rgba(200,169,110,0.5);
+}
+
+/* SAP */
+.sap-g{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);}
+.sc{background:var(--bg);padding:3rem;position:relative;overflow:hidden;transition:background .4s;}
+.sc:hover{background:rgba(0,212,200,.018);}
+.sc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,200,.04),transparent);opacity:0;transition:opacity .4s;pointer-events:none;}
+.sc:hover::after{opacity:1;}
+.sm{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:2rem;display:flex;align-items:center;gap:.7rem;}
+.sm::before{content:'';width:18px;height:1px;background:var(--teal);}
+.sc h3{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;line-height:1.1;margin-bottom:.4rem;}
+.sc .pd{font-size:.74rem;color:var(--muted);margin-bottom:1.5rem;}
+.sc ul{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
+.sc ul li{font-size:.82rem;color:var(--muted);line-height:1.75;padding-left:1rem;position:relative;}
+.sc ul li::before{content:'·';position:absolute;left:0;color:var(--teal);font-size:1.1rem;top:-.1rem;}
+.sst{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.ss{border:1px solid var(--border);color:var(--muted);font-size:.64rem;padding:.22rem .65rem;border-radius:2px;font-family:monospace;letter-spacing:.04em;transition:border-color .2s,color .2s;}
+.sc:hover .ss{border-color:rgba(0,212,200,.22);color:rgba(240,238,233,.4);}
+
+/* SKILLS */
+.sk-g{display:grid;grid-template-columns:repeat(3,1fr);gap:5rem;}
+.sk-col h4{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.ske{margin-bottom:2rem;}
+.ske:last-child{margin-bottom:0;}
+.skr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.5rem;}
+.skt{font-size:.84rem;color:var(--text);}
+.skl{font-size:.64rem;letter-spacing:.06em;color:var(--muted);}
+.skb{height:1px;background:var(--border);position:relative;}
+.skf{position:absolute;top:0;left:0;height:1px;background:linear-gradient(90deg,var(--teal),rgba(0,212,200,.25));transition:width 2s cubic-bezier(.16,1,.3,1);width:0;}
+/* stagger via nth-of-type on parent — applied via JS */
+.ske:nth-child(1) .skf{transition-delay:.0s;}
+.ske:nth-child(2) .skf{transition-delay:.1s;}
+.ske:nth-child(3) .skf{transition-delay:.2s;}
+.ske:nth-child(4) .skf{transition-delay:.3s;}
+
+/* PROJECTS */
+.pj{display:grid;grid-template-columns:64px 1fr 130px;gap:3rem;align-items:center;padding:2.5rem 0;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.pj::before{content:'';position:absolute;inset:0;left:-100%;background:rgba(200,169,110,.02);transition:left .5s cubic-bezier(.16,1,.3,1);pointer-events:none;}
+.pj:hover::before{left:0;}
+.pjn{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic;font-weight:300;color:var(--muted);}
+.pji h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:.35rem;color:var(--text);}
+.pji p{font-size:.8rem;color:var(--muted);line-height:1.7;}
+.pj-stack{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.8rem;}
+.ptg{font-size:.63rem;font-family:monospace;letter-spacing:.04em;border:1px solid var(--border);color:var(--muted);padding:.18rem .55rem;border-radius:2px;}
+.pjt{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;opacity:.45;}
+
+/* CERTS */
+.cert-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);}
+.ct{background:var(--bg);padding:2.5rem;transition:background .3s;}
+.ct:hover{background:rgba(255,255,255,.03);}
+.ct-ic{font-size:1.1rem;margin-bottom:1.5rem;display:block;opacity:.6;}
+.ct h4{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;color:var(--text);margin-bottom:.35rem;line-height:1.3;}
+.ct p{font-size:.7rem;color:var(--muted);letter-spacing:.04em;}
+
+/* LEADERSHIP */
+.ld-g{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);}
+.lc{background:var(--bg);padding:3rem;transition:background .3s;}
+.lc:hover{background:rgba(255,255,255,.022);}
+.lc .lp{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;display:flex;align-items:center;gap:.7rem;}
+.lc .lp::before{content:'';width:14px;height:1px;background:var(--teal);}
+.lc h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--text);margin-bottom:1rem;line-height:1.2;}
+.lc p{font-size:.82rem;color:var(--muted);line-height:1.85;}
+
+/* CTA */
+#cta{padding:12rem 3.5rem;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.cta-grid{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 80%);
+}
+.cta-sub{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2rem;position:relative;z-index:1;}
+.cta-h{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,7.5vw,8rem);font-weight:300;line-height:.92;letter-spacing:-.02em;margin-bottom:4rem;position:relative;z-index:1;}
+.cta-h em{font-style:italic;color:var(--muted);}
+.cta-acts{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;position:relative;z-index:1;}
+.cta-a{
+  font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  border:1.5px solid rgba(255,255,255,.25);color:var(--text);
+  padding:1rem 2.5rem;border-radius:100px;
+  transition:all .35s;font-weight:400;
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(8px);
+}
+.cta-a:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);}
+/* Primary filled button — white bg black text like Liquid Metal */
+.cta-a.p{
+  background:var(--text);color:var(--bg);
+  border-color:var(--text);font-weight:500;
+  box-shadow:0 4px 24px rgba(240,238,233,.15),0 0 0 0 rgba(240,238,233,.3);
+  transition:all .35s;
+}
+.cta-a.p:hover{
+  background:rgba(240,238,233,.9);
+  box-shadow:0 6px 32px rgba(240,238,233,.25),0 0 0 4px rgba(240,238,233,.08);
+  transform:translateY(-1px);
+}
+.cta-mail{display:block;margin-top:3.5rem;font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--muted);text-decoration:none;transition:color .3s;position:relative;z-index:1;}
+.cta-mail:hover{color:var(--text);}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 3.5rem;display:flex;justify-content:space-between;align-items:center;}
+.fl{font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:var(--text);text-decoration:none;opacity:.6;}
+.flinks{display:flex;gap:2.2rem;}
+.flinks a{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;}
+.flinks a:hover{color:var(--text);}
+footer p{font-size:.64rem;color:var(--muted);letter-spacing:.06em;}
+
+/* REVEAL */
+.r{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);}
+.r.in{opacity:1;transform:none;}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}.d4{transition-delay:.4s;}
+
+@media(max-width:960px){
+  nav{padding:1.2rem 1.5rem;}.nav-links{display:none;}
+  #hero{padding:5rem 1.5rem 2rem;}
+  section.sec{padding:5rem 1.5rem;}
+  .about-g,.sap-g,.ld-g{grid-template-columns:1fr;}
+  .ei{grid-template-columns:1fr;gap:1rem;}.ea{display:none;}
+  .pj{grid-template-columns:44px 1fr;}.pjt{display:none;}
+  .sk-g{grid-template-columns:1fr;}
+  .cert-g{grid-template-columns:1fr 1fr;}
+  footer{flex-direction:column;gap:1.5rem;text-align:center;padding:2rem 1.5rem;}
+  .ach-g{grid-template-columns:1fr 1fr;}
+  .hero-foot{flex-direction:column;gap:2rem;}
+  .scroll-ind{display:none;}
+  .nl-balla{font-size:14vw;}
+  .nl-consultant{font-size:11.5vw;}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<nav id="nav">
+  <a href="#hero" class="nl">S. Ballamudi</a>
+  <div class="nr">
+    <ul class="nav-links">
+      <li><a href="#about" data-text="About"><span class="stxt">About</span><span class="uline"></span></a></li>
+      <li><a href="#experience" data-text="Experience"><span class="stxt">Experience</span><span class="uline"></span></a></li>
+      <li><a href="#sap" data-text="SAP"><span class="stxt">SAP</span><span class="uline"></span></a></li>
+      <li><a href="#skills" data-text="Skills"><span class="stxt">Skills</span><span class="uline"></span></a></li>
+      <li><a href="#projects" data-text="Projects"><span class="stxt">Projects</span><span class="uline"></span></a></li>
+    </ul>
+    <a href="#cta" class="ncta">Connect</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="lightning-canvas"></canvas>
+  <div id="hero-sphere"></div>
+  <div id="hero-vignette"></div>
+  <div class="scroll-ind"><span class="scroll-txt">Scroll</span><div class="scroll-line"></div></div>
+
+  <div class="hero-inner">
+    <!-- Eyebrow: top-left anchored -->
+    <div class="hero-eyebrow-row">
+      <p class="hero-eyebrow"><span class="ldot"></span>&nbsp;Hyderabad, India</p>
+    </div>
+    <!-- Name + badge: pushed down into sphere -->
+    <div class="hero-name-block">
+      <div class="hero-name">
+        <span class="nl-main-wrap">
+          <span class="nl-main nl-main-inner">Suraj <em class="nl2-i">Balla</em>mudi</span>
+        </span>
+        <span class="nl-consultant nl3-i">SAP Consultant &nbsp;&middot;&nbsp; S/4HANA</span>
+      </div>
+    </div>
+    <!-- Stats: pinned bottom -->
+    <div class="hero-foot">
+      <div class="hstat">
+        <div class="n stat-scramble" data-original="1.5+">1.5<small style="font-size:1rem">+</small></div>
+        <div class="l">Years Exp.</div>
+      </div>
+      <div class="hstat">
+        <div class="n stat-scramble" data-original=">99%">&gt;99<small style="font-size:1rem">%</small></div>
+        <div class="l">SLA Accuracy</div>
+      </div>
+      <div class="hstat">
+        <div class="n stat-scramble" data-original="500+">500<small style="font-size:1rem">+</small></div>
+        <div class="l">Records Migrated</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq"><div class="mq-track">
+  <span class="mq-i">SAP MM</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">SAP FICO</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">S/4HANA</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Procure-to-Pay</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Power BI</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Data Operations</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">GL &middot; AP &middot; AR</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Henry Harvin Certified</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Excel Dashboards</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">SAP MM</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">SAP FICO</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">S/4HANA</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Procure-to-Pay</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Power BI</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Data Operations</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">GL &middot; AP &middot; AR</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Henry Harvin Certified</span><span class="mq-i mq-sep">&#10022;</span>
+  <span class="mq-i">Excel Dashboards</span><span class="mq-i mq-sep">&#10022;</span>
+</div></div>
+
+<main>
+<section id="about" class="sec">
+  <canvas class="lm-canvas" data-sec="about"></canvas>
+  <div class="sec-neb"></div>
+  <div class="sec-orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(0,212,200,.07) 0%,transparent 70%);top:-100px;right:-80px;"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">01</span><h2 class="st">Who I <em>am</em></h2></div>
+    <div class="about-g">
+      <div class="at">
+        <p class="r">I&apos;m an <strong>SAP MM &amp; FICO Functional Consultant</strong> with hands-on S/4HANA configuration experience, certified by Henry Harvin. My background bridges enterprise system implementation with data analytics &mdash; a combination that delivers measurable value in modern SAP delivery teams.</p>
+        <blockquote class="r d1">&ldquo;Building at the intersection of SAP and operational intelligence.&rdquo;</blockquote>
+        <p class="r d2">At <strong>Genpact</strong> (client: Meta/Instagram), I maintained &gt;99% data accuracy across 1,000+ daily records for four consecutive quarters. At <strong>Communities Heritage Ltd</strong>, I led corporate client onboarding &mdash; migrating 500+ records with zero rollback incidents and cutting onboarding time by 30%.</p>
+        <div class="ach-g r d3">
+          <div class="ach"><div class="n">100%</div><div class="l">Data integrity across<br>all migration batches</div></div>
+          <div class="ach"><div class="n">30%</div><div class="l">Reduction in client<br>onboarding time</div></div>
+          <div class="ach"><div class="n">4&times;</div><div class="l">Consecutive quarters<br>above SLA targets</div></div>
+          <div class="ach"><div class="n">5+</div><div class="l">Enterprise clients<br>managed as SPOC</div></div>
+        </div>
+      </div>
+      <div class="r d2">
+        <div class="fr"><span class="fk">Location</span><span class="fv">Hyderabad, India</span></div>
+        <div class="fr"><span class="fk">Education</span><span class="fv">B.Tech ECE &mdash; KITS Warangal, 2024</span></div>
+        <div class="fr"><span class="fk">Current Focus</span><span class="fv">SAP MM / FICO &middot; S/4HANA</span></div>
+        <div class="fr"><span class="fk">Analytics Stack</span><span class="fv">Power BI &middot; Excel &middot; SQL</span></div>
+        <div class="fr"><span class="fk">Certification</span><span class="fv">Henry Harvin &middot; SAP MM &amp; FICO</span></div>
+        <div class="fr"><span class="fk">Languages</span><span class="fv">English &middot; Telugu &middot; Hindi</span></div>
+        <div class="fr"><span class="fk">Availability</span><span class="fv open">Open to Opportunities</span></div>
+        <div class="fr"><span class="fk">GitHub</span><span class="fv"><a href="https://github.com/surajballamudi" target="_blank">surajballamudi</a></span></div>
+        <div class="fr"><span class="fk">LinkedIn</span><span class="fv"><a href="https://linkedin.com/in/surajballamudi" target="_blank">surajballamudi</a></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="sec-orb" style="width:350px;height:350px;background:radial-gradient(circle,rgba(200,169,110,.07) 0%,transparent 70%);bottom:-80px;left:-60px;"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">02</span><h2 class="st">Professional <em>Experience</em></h2></div>
+    <div>
+      <div class="ei r">
+        <div class="em"><div class="ed">Dec 2025 &ndash; Jan 2026</div><div class="ec">Communities Heritage Ltd<small>Hyderabad &middot; Full-time</small></div></div>
+        <div class="eb">
+          <h3>Implementation Executive</h3>
+          <ul>
+            <li>Led end-to-end onboarding of corporate clients onto HRMS and CRM platforms &mdash; configuration, user training, and go-live support across multiple enterprise accounts.</li>
+            <li>Executed bulk data migration for <strong>500+ employee records</strong> achieving 100% data integrity with zero rollback incidents across all batches.</li>
+            <li>Resolved critical Asset Management logic errors &mdash; <strong>reducing estimated client onboarding time by 30%</strong>.</li>
+            <li>Acted as primary SPOC for 5+ enterprise clients; translated user requirements into structured functional specifications.</li>
+            <li>Maintained and updated SOPs post-resolution, reducing repeat escalations.</li>
+          </ul>
+          <div class="etags"><span class="et">HRMS</span><span class="et">CRM</span><span class="et">Data Migration</span><span class="et">Excel</span><span class="et">SOP</span><span class="et">Stakeholder Mgmt</span></div>
+        </div>
+        <div class="ea">&#8599;</div>
+      </div>
+      <div class="ei r d1">
+        <div class="em"><div class="ed">Jul 2024 &ndash; Dec 2025</div><div class="ec">Genpact<small>Client: Meta / Instagram &middot; Hyderabad</small></div></div>
+        <div class="eb">
+          <h3>Process Associate &mdash; Product Data Ops</h3>
+          <ul>
+            <li>Processed and quality-validated product catalogue data for Meta and Instagram, maintaining <strong>&gt;99% accuracy</strong> across 4 consecutive performance quarters.</li>
+            <li>Conducted SOP-based quality audits on <strong>1,000+ daily records</strong>, flagging anomalies before reaching downstream pipelines.</li>
+            <li>Built Excel-based operational dashboards tracking daily metrics and SLA compliance.</li>
+            <li>Earned consistent above-target ratings in quarterly performance reviews.</li>
+          </ul>
+          <div class="etags"><span class="et">Data Ops</span><span class="et">Quality Audit</span><span class="et">Excel Dashboards</span><span class="et">SLA Management</span><span class="et">Meta Platform</span></div>
+        </div>
+        <div class="ea">&#8599;</div>
+      </div>
+      <div class="ei r d2">
+        <div class="em"><div class="ed">Jan &ndash; Mar 2024</div><div class="ec">AGI Greenpac<small>Hyderabad &middot; Internship</small></div></div>
+        <div class="eb">
+          <h3>Graduate Engineering Trainee &mdash; Instrumentation</h3>
+          <ul><li>Performed diagnostics and calibration of industrial control loops; assisted in deploying automation solutions that reduced unplanned equipment downtime.</li></ul>
+          <div class="etags"><span class="et">Instrumentation</span><span class="et">Control Systems</span><span class="et">Automation</span></div>
+        </div>
+        <div class="ea">&#8599;</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sap" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="sec-orb" style="width:450px;height:450px;background:radial-gradient(circle,rgba(0,150,200,.08) 0%,transparent 70%);top:-100px;right:-100px;"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">03</span><h2 class="st">SAP <em>S/4HANA</em></h2></div>
+    <div class="sap-g">
+      <div class="sc r">
+        <div class="sm">Module MM</div>
+        <h3>Procure-to-Pay<br>Implementation</h3>
+        <p class="pd">Aug &ndash; Oct 2025 &middot; S/4HANA Sandbox &middot; Henry Harvin Certified</p>
+        <ul>
+          <li>Configured complete P2P cycle: Purchase Requisition (ME51N) &rarr; Purchase Order (ME21N) &rarr; Goods Receipt (MIGO) &rarr; Invoice Verification (MIRO) with automatic account determination and GR/IR clearing.</li>
+          <li>Set up Vendor Master, Material Master, Purchasing Organisation, Plant, and Storage Location from scratch in S/4HANA.</li>
+          <li>Verified MM&ndash;FI integration by reviewing automatic financial postings and examining account determination in OBYC.</li>
+        </ul>
+        <div class="sst"><span class="ss">ME51N</span><span class="ss">ME21N</span><span class="ss">MIGO</span><span class="ss">MIRO</span><span class="ss">Fiori</span><span class="ss">OBYC</span><span class="ss">GR/IR</span><span class="ss">Business Partner</span></div>
+      </div>
+      <div class="sc r d2">
+        <div class="sm">Module FICO</div>
+        <h3>Financial Accounting<br>Configuration</h3>
+        <p class="pd">Aug &ndash; Oct 2025 &middot; S/4HANA Sandbox &middot; Henry Harvin Certified</p>
+        <ul>
+          <li>Configured Chart of Accounts, Company Code settings, fiscal year variants, posting periods, and document number ranges in S/4HANA.</li>
+          <li>Practised AP processing (vendor invoices, payment runs, reconciliation), AR processing (customer invoicing, clearing), and basic Asset Accounting setup.</li>
+          <li>Executed MM&ndash;FI integration scenarios; performed month-end bank reconciliation procedures.</li>
+        </ul>
+        <div class="sst"><span class="ss">GL</span><span class="ss">AP</span><span class="ss">AR</span><span class="ss">Asset Accounting</span><span class="ss">CoA</span><span class="ss">Fiscal Year Variants</span><span class="ss">MM&ndash;FI</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">04</span><h2 class="st">Technical <em>Skills</em></h2></div>
+    <div class="sk-g">
+      <div class="r">
+        <h4>SAP Functional</h4>
+        <div class="ske"><div class="skr"><span class="skt">SAP MM (P2P, Procurement)</span><span class="skl">Advanced</span></div><div class="skb"><div class="skf" data-w="82"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">SAP FICO (GL, AP, AR)</span><span class="skl">Proficient</span></div><div class="skb"><div class="skf" data-w="75"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">S/4HANA &amp; Fiori</span><span class="skl">Familiar</span></div><div class="skb"><div class="skf" data-w="70"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">MM&ndash;FI Integration</span><span class="skl">Proficient</span></div><div class="skb"><div class="skf" data-w="72"></div></div></div>
+      </div>
+      <div class="r d1">
+        <h4>Data &amp; Analytics</h4>
+        <div class="ske"><div class="skr"><span class="skt">Excel (Advanced)</span><span class="skl">Expert</span></div><div class="skb"><div class="skf" data-w="93"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">Power BI</span><span class="skl">Proficient</span></div><div class="skb"><div class="skf" data-w="78"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">SQL</span><span class="skl">Intermediate</span></div><div class="skb"><div class="skf" data-w="65"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">Tableau</span><span class="skl">Familiar</span></div><div class="skb"><div class="skf" data-w="55"></div></div></div>
+      </div>
+      <div class="r d2">
+        <h4>Programming &amp; Operations</h4>
+        <div class="ske"><div class="skr"><span class="skt">Python (pandas, scikit-learn)</span><span class="skl">Intermediate</span></div><div class="skb"><div class="skf" data-w="65"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">Data Validation &amp; Migration</span><span class="skl">Advanced</span></div><div class="skb"><div class="skf" data-w="88"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">HRMS/CRM Administration</span><span class="skl">Proficient</span></div><div class="skb"><div class="skf" data-w="75"></div></div></div>
+        <div class="ske"><div class="skr"><span class="skt">SOP Development</span><span class="skl">Proficient</span></div><div class="skb"><div class="skf" data-w="80"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">05</span><h2 class="st">Selected <em>Projects</em></h2></div>
+    <div>
+      <div class="pj r"><div class="pjn">01</div><div class="pji"><h3>EV Market Analysis Dashboard</h3><p>Interactive Power BI dashboard analysing electric vehicle adoption trends &mdash; insights on sales growth, charging infrastructure, and manufacturer performance.</p><div class="pj-stack"><span class="ptg">Power BI</span><span class="ptg">DAX</span><span class="ptg">Data Modelling</span></div></div><div class="pjt">Business Intelligence</div></div>
+      <div class="pj r d1"><div class="pjn">02</div><div class="pji"><h3>Traffic Sign Recognition &mdash; CNN</h3><p>Convolutional Neural Network for real-time traffic sign detection across 43 categories on the GTSRB benchmark. Jul 2023 &ndash; May 2024.</p><div class="pj-stack"><span class="ptg">Python</span><span class="ptg">TensorFlow</span><span class="ptg">CNN</span><span class="ptg">OpenCV</span></div></div><div class="pjt">Deep Learning</div></div>
+      <div class="pj r d2"><div class="pjn">03</div><div class="pji"><h3>Multi-Laser Intrusion Detection System</h3><p>Real-time multi-laser security system with GSM SMS alerts within 200ms. Adaptable architecture for residential and commercial deployments. Dec 2022 &ndash; May 2023.</p><div class="pj-stack"><span class="ptg">Arduino</span><span class="ptg">GSM SIM 900A</span><span class="ptg">C++</span></div></div><div class="pjt">Embedded Systems</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="certifications" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">06</span><h2 class="st">Certifications <em>&amp; Credentials</em></h2></div>
+    <div class="cert-g r">
+      <div class="ct"><span class="ct-ic">&#9670;</span><h4>SAP MM &amp; FICO with S/4HANA</h4><p>Henry Harvin &middot; Functional Consulting</p></div>
+      <div class="ct"><span class="ct-ic">&#9672;</span><h4>Data Analysis &amp; Visualization with Power BI</h4><p>Coursera &middot; Issued Nov 2024</p></div>
+      <div class="ct"><span class="ct-ic">&#9671;</span><h4>Microsoft Advanced Excel</h4><p>Coursera &middot; Analytics &amp; Dashboards</p></div>
+      <div class="ct"><span class="ct-ic">&#9675;</span><h4>Data Analytics for Business</h4><p>Coursera &middot; Business Intelligence</p></div>
+      <div class="ct"><span class="ct-ic">&#9651;</span><h4>AWS Cloud Tech Essentials</h4><p>Coursera &middot; Issued Oct 2023</p></div>
+      <div class="ct"><span class="ct-ic">&#9633;</span><h4>Front-End Development with META</h4><p>Coursera &middot; Issued Jul 2023</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="leadership" class="sec">
+  <div class="lm-css"></div>
+  <div class="sec-neb"></div>
+  <div class="si">
+    <div class="sh r"><span class="sn">07</span><h2 class="st">Leadership <em>&amp; Activities</em></h2></div>
+    <div class="ld-g r">
+      <div class="lc"><div class="lp">2 Years &middot; KITS Warangal</div><h3>President &mdash; HackerRank Tech Club</h3><p>Led the college technical club for 2 years, organising 10+ coding challenges and workshops for 200+ student members. Built a culture of technical engagement and peer learning.</p></div>
+      <div class="lc"><div class="lp">Annual Festival &middot; KITS Warangal</div><h3>Event Organiser &mdash; Technical Fest &ldquo;Sumshodini&rdquo;</h3><p>Coordinated logistics and participant management for the annual technical festival with 500+ participants across multiple competitions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <canvas class="lm-canvas" data-sec="cta"></canvas>
+  <div class="cta-grid"></div>
+  <div class="sec-orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(0,212,200,.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;"></div>
+  <p class="cta-sub r">Open to Opportunities</p>
+  <h2 class="cta-h r d1">An idea,<br>a role,<br><em>a conversation?</em></h2>
+  <div class="cta-acts r d2">
+    <a href="mailto:ballamudisuraj@gmail.com" class="cta-a p">Send an Email</a>
+    <a href="https://linkedin.com/in/surajballamudi" target="_blank" class="cta-a">LinkedIn</a>
+    <a href="https://surajballamudi.online/Images/SurajBallamudi_Resume.pdf" target="_blank" class="cta-a">Download Resume</a>
+  </div>
+  <a href="mailto:ballamudisuraj@gmail.com" class="cta-mail r d3">ballamudisuraj@gmail.com</a>
+</section>
+</main>
+
+<footer>
+  <a href="#hero" class="fl">Suraj Ballamudi</a>
+  <p>&copy; 2026 &middot; Hyderabad, India</p>
+  <div class="flinks">
+    <a href="https://linkedin.com/in/surajballamudi" target="_blank">LinkedIn</a>
+    <a href="https://github.com/surajballamudi" target="_blank">GitHub</a>
+    <a href="https://surajballamudi.online/Images/SurajBallamudi_Resume.pdf" target="_blank">Resume</a>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+var cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+var mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function lc(){rx+=(mx-rx)*.35;ry+=(my-ry)*.35;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(lc);})();
+document.querySelectorAll('a,button,.ei,.sc,.lc,.pj,.ct,.ach').forEach(function(el){
+  el.addEventListener('mouseenter',function(){document.body.classList.add('hov');});
+  el.addEventListener('mouseleave',function(){document.body.classList.remove('hov');});
+});
+
+/* LIGHTNING WEBGL */
+(function(){
+  var canvas=document.getElementById('lightning-canvas');
+  if(!canvas)return;
+  var gl=canvas.getContext('webgl');
+  if(!gl)return;
+  function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;gl.viewport(0,0,canvas.width,canvas.height);}
+  resize();
+  window.addEventListener('resize',resize);
+  var VS='attribute vec2 aPos;void main(){gl_Position=vec4(aPos,0.,1.);}';
+  var FS=[
+    'precision mediump float;',
+    'uniform vec2 iRes;uniform float iTime;',
+    'uniform float uHue,uXOff,uSpeed,uInt,uSize;',
+    '#define OCT 10',
+    'vec3 hsv2rgb(vec3 c){vec3 rgb=clamp(abs(mod(c.x*6.+vec3(0.,4.,2.),6.)-3.)-1.,0.,1.);return c.z*mix(vec3(1.),rgb,c.y);}',
+    'float h11(float p){p=fract(p*.1031);p*=p+33.33;p*=p+p;return fract(p);}',
+    'float h12(vec2 p){vec3 p3=fract(vec3(p.xyx)*.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);}',
+    'mat2 rot(float t){float c=cos(t),s=sin(t);return mat2(c,-s,s,c);}',
+    'float noise(vec2 p){vec2 ip=floor(p),fp=fract(p);float a=h12(ip),b=h12(ip+vec2(1.,0.)),c2=h12(ip+vec2(0.,1.)),d=h12(ip+vec2(1.,1.));vec2 t=smoothstep(0.,1.,fp);return mix(mix(a,b,t.x),mix(c2,d,t.x),t.y);}',
+    'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<OCT;i++){v+=a*noise(p);p*=rot(.45);p*=2.;a*=.5;}return v;}',
+    'void main(){',
+    '  vec2 uv=gl_FragCoord.xy/iRes;uv=2.*uv-1.;uv.x*=iRes.x/iRes.y;uv.x+=uXOff;',
+    '  uv+=2.*fbm(uv*uSize+.8*iTime*uSpeed)-1.;',
+    '  float dist=abs(uv.x);',
+    '  vec3 base=hsv2rgb(vec3(uHue/360.,.7,.8));',
+    '  vec3 col=base*pow(mix(0.,.07,h11(iTime*uSpeed))/dist,1.)*uInt;',
+    '  gl_FragColor=vec4(col,1.);',
+    '}'
+  ].join('\n');
+  function sh(src,type){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(s));return null;}return s;}
+  var vs=sh(VS,gl.VERTEX_SHADER),fs=sh(FS,gl.FRAGMENT_SHADER);
+  if(!vs||!fs)return;
+  var prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return;
+  gl.useProgram(prog);
+  var verts=new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]);
+  var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,verts,gl.STATIC_DRAW);
+  var ap=gl.getAttribLocation(prog,'aPos');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+  var uR=gl.getUniformLocation(prog,'iRes'),uT=gl.getUniformLocation(prog,'iTime'),
+      uH=gl.getUniformLocation(prog,'uHue'),uX=gl.getUniformLocation(prog,'uXOff'),
+      uSp=gl.getUniformLocation(prog,'uSpeed'),uI=gl.getUniformLocation(prog,'uInt'),uSz=gl.getUniformLocation(prog,'uSize');
+  var t0=performance.now();
+  function render(){
+    resize();
+    gl.uniform2f(uR,canvas.width,canvas.height);
+    gl.uniform1f(uT,(performance.now()-t0)/1000);
+    gl.uniform1f(uH,230);gl.uniform1f(uX,0);gl.uniform1f(uSp,1.6);gl.uniform1f(uI,0.65);gl.uniform1f(uSz,2.0);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    requestAnimationFrame(render);
+  }
+  render();
+})();
+
+/* TEXT SCRAMBLE */
+(function(){
+  var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+
+  /* Nav links */
+  document.querySelectorAll('.nav-links a[data-text]').forEach(function(link){
+    var orig=link.dataset.text;
+    var stxt=link.querySelector('.stxt');
+    var iid=null,frame=0;
+    function scramble(){
+      frame=0;var dur=orig.length*3;clearInterval(iid);
+      iid=setInterval(function(){
+        frame++;var prog=frame/dur,rev=Math.floor(prog*orig.length);
+        stxt.innerHTML=orig.split('').map(function(c,i){
+          if(i<rev)return c;
+          var sc=true;
+          return '<span class="scramble-char'+(sc?' scrambling':'')+'">'+(i>=rev?CHARS[Math.floor(Math.random()*CHARS.length)]:c)+'</span>';
+        }).join('');
+        if(frame>=dur){clearInterval(iid);stxt.textContent=orig;}
+      },30);
+    }
+    link.addEventListener('mouseenter',scramble);
+    link.addEventListener('mouseleave',function(){clearInterval(iid);stxt.textContent=orig;});
+  });
+
+  /* Stat numbers — auto-fire on load + on hover */
+  var statEls=document.querySelectorAll('.stat-scramble');
+  function scrambleStat(el){
+    var orig=el.dataset.original;
+    var frame=0,dur=orig.replace(/[^a-zA-Z0-9]/g,'').length*5,iid=null;
+    clearInterval(el._iid);
+    iid=setInterval(function(){
+      frame++;
+      var prog=frame/dur,rev=Math.floor(prog*orig.length);
+      var out='';
+      for(var i=0;i<orig.length;i++){
+        var c=orig[i];
+        if(c==='>'||c==='+'||c==='%'){out+='<small style="font-size:1rem">'+c+'</small>';}
+        else if(i<rev){out+=c;}
+        else{out+='<span class="scramble-char scrambling">'+CHARS[Math.floor(Math.random()*CHARS.length)]+'</span>';}
+      }
+      el.innerHTML=out;
+      if(frame>=dur){clearInterval(iid);restoreStat(el,orig);}
+    },40);
+    el._iid=iid;
+  }
+  function restoreStat(el,orig){
+    var out='';
+    for(var i=0;i<orig.length;i++){
+      var c=orig[i];
+      if(c==='>'||c==='+'||c==='%')out+='<small style="font-size:1rem">'+c+'</small>';
+      else out+=c;
+    }
+    el.innerHTML=out;
+  }
+  /* Auto-fire once after hero reveals */
+  setTimeout(function(){
+    statEls.forEach(function(el,i){setTimeout(function(){scrambleStat(el);},1800+i*200);});
+  },0);
+  /* Hover re-trigger */
+  var foot=document.querySelector('.hero-stats');
+  if(foot){foot.addEventListener('mouseenter',function(){statEls.forEach(function(el,i){setTimeout(function(){scrambleStat(el);},i*150);});});}
+})();
+
+/* ══ LIQUID METAL SECTIONS ══ */
+(function(){
+  var VS = 'attribute vec2 aPos;void main(){gl_Position=vec4(aPos,0.,1.);}';
+  // Liquid metal: animated chromatic noise with metallic sheen
+  var FS = [
+    'precision mediump float;',
+    'uniform vec2 iRes;uniform float iTime;',
+    'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}',
+    'float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);',
+    '  return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}',
+    'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<6;i++){v+=a*n(p);p*=2.1;a*=.5;}return v;}',
+    'void main(){',
+    '  vec2 uv=gl_FragCoord.xy/iRes;',
+    '  float t=iTime*.18;',
+    '  vec2 p=uv*3.+vec2(t,t*.7);',
+    '  float f=fbm(p+fbm(p+fbm(p)));',
+    '  /* Chrome palette: dark->silver->blue->white */',
+    '  vec3 col=mix(vec3(.04,.06,.12),vec3(.55,.65,.85),f);',
+    '  col=mix(col,vec3(.85,.9,1.),pow(f,3.)*1.2);',
+    '  col+=vec3(.0,.05,.15)*sin(f*8.+t*2.)*.3;',
+    '  float shine=pow(max(0.,sin(uv.x*6.+f*4.+t*1.5)),.6)*.12;',
+    '  col+=vec3(.8,.88,1.)*shine;',
+    '  gl_FragColor=vec4(col,1.);',
+    '}'
+  ].join('\n');
+
+  function initCanvas(canvas){
+    var gl=canvas.getContext('webgl',{antialias:false,powerPreference:'low-power'});
+    if(!gl)return;
+    function sh(src,type){
+      var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
+      if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){return null;}return s;
+    }
+    var vs=sh(VS,gl.VERTEX_SHADER),fs=sh(FS,gl.FRAGMENT_SHADER);
+    if(!vs||!fs)return;
+    var prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return;
+    gl.useProgram(prog);
+    var verts=new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]);
+    var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,verts,gl.STATIC_DRAW);
+    var ap=gl.getAttribLocation(prog,'aPos');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+    var uR=gl.getUniformLocation(prog,'iRes'),uT=gl.getUniformLocation(prog,'iTime');
+    var t0=performance.now();
+    var running=false;
+    function render(){
+      if(!running)return;
+      var w=canvas.clientWidth,h=canvas.clientHeight;
+      if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+      gl.uniform2f(uR,canvas.width,canvas.height);
+      gl.uniform1f(uT,(performance.now()-t0)/1000);
+      gl.drawArrays(gl.TRIANGLES,0,6);
+      requestAnimationFrame(render);
+    }
+    // Only run when section is visible — perf optimization
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting&&!running){running=true;render();}
+        else if(!e.isIntersecting){running=false;}
+      });
+    },{threshold:.01});
+    io.observe(canvas);
+  }
+
+  document.querySelectorAll('.lm-canvas').forEach(function(c){initCanvas(c);});
+})();
+
+/* NAV */
+var nav=document.getElementById('nav');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>60);},{passive:true});
+
+/* LENIS SMOOTH SCROLL */
+var lenis;
+if(typeof Lenis !== 'undefined'){
+  lenis = new Lenis({duration:1.2,easing:function(t){return t===1?1:1-Math.pow(2,-10*t);},smoothWheel:true});
+  function lenisRaf(time){lenis.raf(time);requestAnimationFrame(lenisRaf);}
+  requestAnimationFrame(lenisRaf);
+  /* Anchor click smooth scroll */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var target=document.querySelector(a.getAttribute('href'));
+      if(target) lenis.scrollTo(target,{offset:-80,duration:1.4});
+    });
+  });
+}
+
+/* REVEAL + SKILL BARS with stagger */
+var revealObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      /* Stagger skill bars 60ms apart */
+      e.target.querySelectorAll('.skf[data-w]').forEach(function(b,i){
+        setTimeout(function(){b.style.width=b.dataset.w+'%';}, i*60);
+      });
+    }
+  });
+},{threshold:.06});
+document.querySelectorAll('.r').forEach(function(el){revealObs.observe(el);});
+
+/* ACTIVE NAV — with pip dot */
+var secs=document.querySelectorAll('section[id]');
+var navAs=document.querySelectorAll('.nav-links a');
+function updateActiveNav(){
+  var c='';
+  secs.forEach(function(s){if(window.scrollY>=s.offsetTop-160)c=s.id;});
+  navAs.forEach(function(a){
+    var isActive=a.getAttribute('href')==='#'+c;
+    a.classList.toggle('active',isActive);
+  });
+}
+window.addEventListener('scroll',updateActiveNav,{passive:true});
+updateActiveNav();
+
+</script>
+</body>
+</html>
